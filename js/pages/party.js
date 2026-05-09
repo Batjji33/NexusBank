@@ -20,87 +20,99 @@ export default function renderParty(container, partyId) {
             </div>
         </div>
 
-        <div class="content-area animate-in">
-            <div class="dashboard-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px;">
-                <!-- Gauche -->
-                <div class="flex-col gap-6">
-                    <div class="hero-balance">
+        <div class="content-area animate-in" style="max-width: 1600px;">
+            <!-- Ligne 1: Solde Full Width -->
+            <div class="hero-balance" style="margin-bottom: 32px;">
+                <div class="flex justify-between items-start">
+                    <div>
                         <div class="text-secondary" style="font-size: 0.9rem;">Solde disponible</div>
                         <div class="balance-amount" id="current-balance">0.00 €</div>
-                        <div class="progress-bar"><div class="progress-fill" id="balance-progress"></div></div>
-                        <div class="flex justify-between text-secondary" style="font-size: 0.75rem;">
-                            <span>Niveau 0</span>
-                            <span id="max-balance">Plafond: --</span>
-                        </div>
                     </div>
-
-                    <!-- Admin Panel -->
-                    <div id="admin-panel" class="bg-card animate-in" style="display:none; border: 1px solid var(--accent);">
-                        <h2 style="font-size: 1.1rem; color: var(--accent); margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
-                            🛡️ Contrôle Économique
-                        </h2>
-                        <div class="flex-col gap-4">
-                            <div class="flex justify-between items-center p-3" style="background: rgba(255,255,255,0.03); border-radius: 12px;">
-                                <div>
-                                    <div style="font-weight: 600; font-size: 0.9rem;">Salaire Automatique</div>
-                                    <div id="status-salaire" style="font-size: 0.8rem;">...</div>
-                                </div>
-                                <button id="btn-toggle-salaire" class="btn-outline" style="height: 32px; padding: 0 12px; font-size: 0.75rem;">ON/OFF</button>
-                            </div>
-                            
-                            <div class="grid" style="grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
-                                <div class="flex-col gap-1">
-                                    <label class="text-secondary" style="font-size: 0.7rem;">Salaire (€)</label>
-                                    <input type="number" id="input-salaire-amount" style="height: 36px; padding: 0 10px;">
-                                </div>
-                                <div class="flex-col gap-1">
-                                    <label class="text-secondary" style="font-size: 0.7rem;">Taxe (%)</label>
-                                    <input type="number" id="input-taxe-percent" style="height: 36px; padding: 0 10px;">
-                                </div>
-                                <div class="flex-col gap-1">
-                                    <label class="text-secondary" style="font-size: 0.7rem;">Frais (€)</label>
-                                    <input type="number" id="input-frais-fixe" style="height: 36px; padding: 0 10px;">
-                                </div>
-                            </div>
-                            <button id="btn-save-settings" style="width: 100%; height: 40px; font-size: 0.9rem;">Enregistrer les paramètres</button>
-                        </div>
+                    <div style="text-align: right;">
+                        <div class="text-secondary" style="font-size: 0.85rem;">Plafond de la partie</div>
+                        <div id="max-balance" style="font-weight: 700; font-size: 1.1rem; margin-top: 4px;">--</div>
                     </div>
+                </div>
+                <div class="progress-bar" style="height: 12px;"><div class="progress-fill" id="balance-progress"></div></div>
+                <div class="text-secondary" style="font-size: 0.75rem; margin-top: 8px;">Niveau 0 • Progression du compte</div>
+            </div>
 
-                    <div class="bg-card">
-                        <h2 style="margin-bottom: 20px; font-size: 1.2rem;">🏆 Classement</h2>
-                        <div id="leaderboard-list" class="flex-col gap-2"><div class="spinner"></div></div>
+            <!-- Ligne 2: Grille 3 Colonnes sur PC -->
+            <div class="dashboard-grid pro-layout">
+                <!-- Colonne 1: Admin -->
+                <div id="admin-panel" class="bg-card animate-in" style="display:none; border: 1px solid var(--accent); height: fit-content;">
+                    <h2 style="font-size: 1.1rem; color: var(--accent); margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                        🛡️ Administration
+                    </h2>
+                    <div class="flex-col gap-4">
+                        <div class="flex justify-between items-center p-3" style="background: rgba(255,255,255,0.03); border-radius: 12px;">
+                            <div id="status-salaire" style="font-size: 0.8rem; font-weight: 600;">...</div>
+                            <button id="btn-toggle-salaire" class="btn-outline" style="height: 28px; padding: 0 10px; font-size: 0.7rem;">ON/OFF</button>
+                        </div>
+                        
+                        <div class="flex-col gap-3">
+                            <div>
+                                <label class="text-secondary" style="font-size: 0.7rem; margin-bottom:4px; display:block;">Salaire quotidien (€)</label>
+                                <input type="number" id="input-salaire-amount" style="height: 38px; font-size: 0.9rem;">
+                            </div>
+                            <div class="flex gap-2">
+                                <div style="flex: 1;">
+                                    <label class="text-secondary" style="font-size: 0.7rem; margin-bottom:4px; display:block;">Taxe (%)</label>
+                                    <input type="number" id="input-taxe-percent" style="height: 38px; font-size: 0.9rem;">
+                                </div>
+                                <div style="flex: 1;">
+                                    <label class="text-secondary" style="font-size: 0.7rem; margin-bottom:4px; display:block;">Frais fixes (€)</label>
+                                    <input type="number" id="input-frais-fixe" style="height: 38px; font-size: 0.9rem;">
+                                </div>
+                            </div>
+                        </div>
+                        <button id="btn-save-settings" style="width: 100%; height: 44px; margin-top: 8px;">Appliquer</button>
                     </div>
                 </div>
 
-                <!-- Droite -->
-                <div class="flex-col gap-6">
-                    <div class="bg-card" style="flex: 1;">
-                        <h2 style="margin-bottom: 20px; font-size: 1.2rem;">🕒 Activité récente</h2>
-                        <div id="history-list" class="flex-col gap-3"><div class="spinner"></div></div>
+                <!-- Colonne 2: Classement -->
+                <div class="bg-card" style="height: fit-content;">
+                    <h2 style="margin-bottom: 24px; font-size: 1.1rem; display: flex; align-items: center; gap: 10px;">
+                        🏆 Classement
+                    </h2>
+                    <div id="leaderboard-list" class="flex-col gap-1">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+
+                <!-- Colonne 3: Activité -->
+                <div class="bg-card" style="min-height: 400px;">
+                    <h2 style="margin-bottom: 24px; font-size: 1.1rem; display: flex; align-items: center; gap: 10px;">
+                        🕒 Activité récente
+                    </h2>
+                    <div id="history-list" class="flex-col gap-3">
+                        <div class="spinner"></div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <button class="fab" id="btn-new-transfer" title="Envoyer de l'argent">💸</button>
+        <!-- Bouton flottant Virement -->
+        <button class="fab" id="btn-new-transfer" title="Virement">💸</button>
 
+        <!-- Modale de virement -->
         <div class="modal-overlay" id="transfer-modal">
             <div class="modal-content animate-in">
-                <h2 style="text-align: center;">Virement Express</h2>
+                <h2 style="text-align: center;">Nouveau Virement</h2>
                 <form id="transfer-form" style="margin-top:24px;">
                     <div class="flex-col gap-4">
                         <div>
-                            <label class="text-secondary" style="font-size: 0.8rem; margin-bottom: 6px; display: block;">Bénéficiaire</label>
+                            <label class="text-secondary" style="font-size: 0.8rem; margin-bottom: 6px; display: block;">Destinataire</label>
                             <select id="transfer-receiver" required>
                                 <option value="">Choisir un joueur...</option>
                             </select>
                         </div>
                         <div>
-                            <label class="text-secondary" style="font-size: 0.8rem; margin-bottom: 6px; display: block;">Montant à transférer (€)</label>
+                            <label class="text-secondary" style="font-size: 0.8rem; margin-bottom: 6px; display: block;">Montant (€)</label>
                             <input type="number" id="transfer-amount" min="1" step="0.01" placeholder="0.00" required>
                         </div>
                         
-                        <div class="recap-box" id="transfer-recap" style="display:none; background: rgba(255,255,255,0.03); padding: 16px; border-radius: 16px; margin-top: 8px;">
+                        <div class="recap-box" id="transfer-recap" style="display:none; background: rgba(255,255,255,0.03); padding: 20px; border-radius: 16px;">
                             <div class="flex justify-between" style="font-size: 0.9rem; margin-bottom: 8px;">
                                 <span class="text-secondary">Envoi</span> <span id="recap-base">0.00 €</span>
                             </div>
@@ -108,19 +120,16 @@ export default function renderParty(container, partyId) {
                                 <span id="recap-taxe-label">Taxe</span> <span id="recap-taxe">0.00 €</span>
                             </div>
                             <div class="flex justify-between text-error" style="font-size: 0.85rem; margin-bottom: 12px;">
-                                <span>Commission fixe</span> <span id="recap-frais-label">0.00 €</span>
+                                <span>Frais de service</span> <span id="recap-frais-label">0.00 €</span>
                             </div>
                             <div class="flex justify-between" style="font-weight: 700; padding-top: 12px; border-top: 1px dashed rgba(255,255,255,0.1);">
                                 <span>Total débit</span> <span id="recap-debit" class="text-error">0.00 €</span>
-                            </div>
-                            <div style="text-align: center; font-size: 0.75rem; color: var(--success); margin-top: 8px;">
-                                Le destinataire recevra <span id="recap-receives">0.00 €</span>
                             </div>
                         </div>
                     </div>
                     <div class="flex gap-3" style="margin-top: 32px;">
                         <button type="button" class="btn-outline" style="flex:1;" id="btn-cancel-transfer">Annuler</button>
-                        <button type="submit" style="flex:2;" id="btn-confirm-transfer" disabled>Confirmer l'envoi</button>
+                        <button type="submit" style="flex:2;" id="btn-confirm-transfer" disabled>Confirmer</button>
                     </div>
                 </form>
                 <div id="transfer-success" style="display:none; text-align:center; padding:30px 0;">
@@ -131,7 +140,35 @@ export default function renderParty(container, partyId) {
         </div>
     `;
 
-    // Elements
+    // CSS spécifique pour ce layout 3 colonnes
+    const style = document.createElement('style');
+    style.textContent = `
+        @media (min-width: 1100px) {
+            .pro-layout {
+                display: grid;
+                grid-template-columns: ${partyData?.is_admin ? '320px 1fr 1fr' : '1fr 1.5fr'};
+                gap: 24px;
+                align-items: start;
+            }
+        }
+        @media (max-width: 1099px) and (min-width: 700px) {
+            .pro-layout {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+            }
+            #admin-panel { grid-column: 1 / -1; }
+        }
+        @media (max-width: 699px) {
+            .pro-layout {
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+
     const elInputSalaire = document.getElementById('input-salaire-amount');
     const elInputTaxe = document.getElementById('input-taxe-percent');
     const elInputFrais = document.getElementById('input-frais-fixe');
@@ -143,17 +180,23 @@ export default function renderParty(container, partyId) {
             if (error) return;
             partyData = data;
 
+            // Mise à jour dynamique du layout si admin
+            if (data.is_admin) {
+                style.textContent = style.textContent.replace('1fr 1.5fr', '320px 1fr 1fr');
+            }
+
             document.getElementById('party-name').innerText = data.party.nom;
             document.getElementById('party-code').innerText = data.party.code_invitation;
             document.getElementById('current-balance').innerText = formatCurrency(data.solde_actuel);
-            document.getElementById('max-balance').innerText = `Plafond: ${formatCurrency(data.party.solde_max)}`;
+            document.getElementById('max-balance').innerText = formatCurrency(data.party.solde_max);
             document.getElementById('balance-progress').style.width = `${Math.min(100, (data.solde_actuel / data.party.solde_max) * 100)}%`;
 
             if (data.is_admin) {
                 document.getElementById('admin-panel').style.display = 'block';
                 document.getElementById('admin-badge').style.display = 'block';
-                document.getElementById('status-salaire').innerHTML = data.party.salaire_actif ? '<span class="text-success">ACTIF</span>' : '<span class="text-error">EN PAUSE</span>';
-                document.getElementById('status-salaire').innerHTML += ` • ${formatCurrency(data.party.salaire_journalier)} / jour`;
+                document.getElementById('status-salaire').innerHTML = data.party.salaire_actif ? 
+                    '<span class="text-success">SALAIRE ACTIF</span>' : 
+                    '<span class="text-error">SALAIRE EN PAUSE</span>';
                 if (!elInputSalaire.dataset.touched) elInputSalaire.value = data.party.salaire_journalier;
                 if (!elInputTaxe.dataset.touched) elInputTaxe.value = data.party.taxe_pourcentage;
                 if (!elInputFrais.dataset.touched) elInputFrais.value = data.party.frais_fixe;
@@ -163,8 +206,8 @@ export default function renderParty(container, partyId) {
             document.getElementById('leaderboard-list').innerHTML = data.classement.map((u, i) => `
                 <div class="leaderboard-item ${u.user_id === session.user_id ? 'me' : ''}">
                     <div class="flex items-center gap-3">
-                        <span style="font-weight: 800; opacity: 0.5; width: 20px;">${i+1}</span>
-                        <span style="${u.user_id === session.user_id ? 'font-weight:bold;' : ''}">${u.username}</span>
+                        <span style="font-weight: 800; opacity: 0.5; width: 24px;">${i+1}</span>
+                        <span>${u.username}</span>
                     </div>
                     <span style="font-weight: 700;">${formatCurrency(u.solde)}</span>
                 </div>
@@ -179,22 +222,22 @@ export default function renderParty(container, partyId) {
 
             // Activity
             document.getElementById('history-list').innerHTML = data.historique.length === 0 ? 
-                '<div class="text-secondary" style="text-align:center; padding: 20px;">Aucun mouvement</div>' :
+                '<div class="text-secondary" style="text-align:center; padding: 40px 0;">Aucun mouvement récent</div>' :
                 data.historique.map(t => {
                     const amIEmiter = t.emetteur_id === session.user_id;
                     const isSystem = t.emetteur_id === '00000000-0000-0000-0000-000000000000';
                     return `
-                        <div class="history-item">
+                        <div class="history-item" style="padding: 12px;">
                             <div class="flex items-center gap-3">
-                                <div class="history-icon" style="background: ${isSystem ? 'rgba(0, 230, 118, 0.1)' : 'rgba(255,255,255,0.05)'}">
+                                <div class="history-icon" style="width: 36px; height: 36px; font-size: 1rem;">
                                     ${isSystem ? '💰' : (amIEmiter ? '↗️' : '↙️')}
                                 </div>
                                 <div>
-                                    <div style="font-weight: 500; font-size: 0.9rem;">${isSystem ? 'Salaire Quotidien' : (amIEmiter ? 'Virement vers ' + t.receveur_username : 'Reçu de ' + t.emetteur_username)}</div>
-                                    <div class="text-secondary" style="font-size: 0.7rem;">${new Date(t.date).toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'})}</div>
+                                    <div style="font-weight: 500; font-size: 0.85rem;">${isSystem ? 'Salaire' : (amIEmiter ? t.receveur_username : t.emetteur_username)}</div>
+                                    <div class="text-secondary" style="font-size: 0.65rem;">${new Date(t.date).toLocaleTimeString()}</div>
                                 </div>
                             </div>
-                            <div class="${amIEmiter ? 'text-error' : 'text-success'}" style="font-weight: 700;">
+                            <div class="${amIEmiter ? 'text-error' : 'text-success'}" style="font-weight: 700; font-size: 0.9rem;">
                                 ${amIEmiter ? '-' : '+'}${formatCurrency(isSystem ? t.montant_recu : (amIEmiter ? t.cout_total_emetteur : t.montant_recu))}
                             </div>
                         </div>
@@ -203,7 +246,7 @@ export default function renderParty(container, partyId) {
         } catch (err) { console.error(err); }
     }
 
-    // Event handlers...
+    // Event Handlers
     document.getElementById('btn-toggle-salaire').onclick = async (e) => {
         const restore = showLoader(e.target);
         await supabase.rpc('toggle_salaire', { p_user_id: session.user_id, p_party_id: partyId });
@@ -212,11 +255,10 @@ export default function renderParty(container, partyId) {
 
     document.getElementById('btn-save-settings').onclick = async (e) => {
         const sal = parseFloat(elInputSalaire.value), tax = parseFloat(elInputTaxe.value), frs = parseFloat(elInputFrais.value);
-        if (isNaN(sal) || isNaN(tax) || isNaN(frs)) return;
         const restore = showLoader(e.target);
         await supabase.rpc('update_party_settings', { p_user_id: session.user_id, p_party_id: partyId, p_salaire_journalier: sal, p_taxe_pourcentage: tax, p_frais_fixe: frs });
         elInputSalaire.dataset.touched = elInputTaxe.dataset.touched = elInputFrais.dataset.touched = "";
-        showToast("Paramètres appliqués"); await loadDashboard(); restore();
+        showToast("Réglages enregistrés"); await loadDashboard(); restore();
     };
 
     [elInputSalaire, elInputTaxe, elInputFrais].forEach(el => el.oninput = () => el.dataset.touched = "true");
@@ -238,7 +280,6 @@ export default function renderParty(container, partyId) {
         document.getElementById('recap-taxe-label').innerText = `Taxe (${tPercent}%)`;
         document.getElementById('recap-taxe').innerText = `- ${formatCurrency(taxe)}`;
         document.getElementById('recap-frais-label').innerText = `- ${formatCurrency(fFixe)}`;
-        document.getElementById('recap-receives').innerText = formatCurrency(val - taxe);
         document.getElementById('recap-debit').innerText = formatCurrency(val + fFixe);
         document.getElementById('transfer-recap').style.display = 'block';
         document.getElementById('btn-confirm-transfer').disabled = false;
@@ -248,7 +289,7 @@ export default function renderParty(container, partyId) {
         e.preventDefault();
         const restore = showLoader(document.getElementById('btn-confirm-transfer'));
         const { data, error } = await supabase.rpc('send_transaction', { p_emetteur_id: session.user_id, p_party_id: partyId, p_receveur_username: selectReceiver.value, p_montant: parseFloat(document.getElementById('transfer-amount').value) });
-        if (error || !data.success) showToast(data?.error || "Transaction impossible", "error");
+        if (error || !data.success) showToast(data?.error || "Erreur", "error");
         else {
             document.getElementById('transfer-form').style.display = 'none';
             document.getElementById('transfer-success').style.display = 'block';
@@ -259,8 +300,4 @@ export default function renderParty(container, partyId) {
 
     loadDashboard();
     pollInterval = setInterval(loadDashboard, 30000);
-    
-    // Cleanup
-    const obs = new MutationObserver(() => { if (!document.contains(container)) { clearInterval(pollInterval); obs.disconnect(); }});
-    obs.observe(document.body, { childList: true, subtree: true });
 }
