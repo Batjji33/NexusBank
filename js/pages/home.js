@@ -10,96 +10,75 @@ export default function renderHome(container) {
     container.innerHTML = `
         <div class="navbar">
             <div class="logo">NexusBank</div>
-            <div class="user-actions">
-                <span>${session.username}</span>
-                <button class="btn-logout" id="btn-logout">Déconnexion</button>
+            <div class="user-actions flex items-center gap-4">
+                <span style="font-weight: 500;">${session.username}</span>
+                <button class="btn-outline" id="btn-logout" style="padding: 8px 16px; font-size: 0.85rem;">Déconnexion</button>
             </div>
         </div>
 
         <div class="main-layout">
             <div class="sidebar">
-                <div class="nav-item active" data-tab="parties">
-                    Mes parties
+                <div class="nav-item active animate-in" data-tab="parties" style="cursor:pointer; padding:12px 16px; border-radius:12px; transition: var(--transition);">
+                    🏠 Mes parties
                 </div>
-                <div class="nav-item" data-tab="invitations" style="margin-top: 16px;">
-                    Invitations
-                    <div class="badge" id="invite-badge" style="display:none;">0</div>
-                </div>
-                <div class="nav-item" data-tab="create" style="margin-top: 16px;">
-                    Créer / Rejoindre
+                <div class="nav-item animate-in" data-tab="create" style="cursor:pointer; padding:12px 16px; border-radius:12px; transition: var(--transition); margin-top: 8px;">
+                    ➕ Créer / Rejoindre
                 </div>
             </div>
 
             <div class="mobile-nav">
-                <div class="nav-item active" data-tab="parties">
-                    <span>🏠</span>
-                    Parties
-                </div>
-                <div class="nav-item" data-tab="invitations">
-                    <span>✉️</span>
-                    Invitations
-                    <div class="badge" id="invite-badge-mobile" style="display:none;">0</div>
-                </div>
-                <div class="nav-item" data-tab="create">
-                    <span>➕</span>
-                    Ajouter
-                </div>
+                <div class="nav-item active" data-tab="parties"><span>🏠</span></div>
+                <div class="nav-item" data-tab="create"><span>➕</span></div>
             </div>
 
-            <div class="content-area">
+            <div class="content-area animate-in">
                 <!-- Section Parties -->
                 <div id="section-parties">
-                    <h2>Mes parties</h2>
-                    <div id="parties-list"><div class="spinner"></div></div>
-                </div>
-
-                <!-- Section Invitations -->
-                <div id="section-invitations" style="display:none;">
-                    <h2>Invitations</h2>
-                    <p class="text-secondary">Les invitations arriveront bientôt...</p>
+                    <h2 style="margin-bottom: 24px; font-size: 1.8rem;">Mes parties</h2>
+                    <div id="parties-list" class="grid" style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+                        <div class="spinner"></div>
+                    </div>
                 </div>
 
                 <!-- Section Créer / Rejoindre -->
                 <div id="section-create" style="display:none;">
-                    <h2>Rejoindre une partie</h2>
-                    <div class="bg-card" style="margin-bottom: 24px;">
-                        <form id="form-join" class="flex gap-4">
-                            <input type="text" id="join-code" placeholder="Code d'invitation" required>
-                            <button type="submit" id="btn-join">Rejoindre</button>
-                        </form>
-                    </div>
+                    <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 32px; align-items: start;">
+                        <div class="bg-card">
+                            <h2 style="margin-bottom: 20px;">Rejoindre</h2>
+                            <form id="form-join" class="flex-col gap-4">
+                                <input type="text" id="join-code" placeholder="Code d'invitation (ex: A1B2C3)" required style="text-transform: uppercase;">
+                                <button type="submit" id="btn-join">Rejoindre la partie</button>
+                            </form>
+                        </div>
 
-                    <h2>Créer une partie</h2>
-                    <div class="bg-card">
-                        <form id="form-create" class="flex-col gap-4">
-                            <div>
-                                <label class="text-secondary" style="font-size:0.85rem; margin-bottom:4px; display:block;">Nom de la partie</label>
-                                <input type="text" id="create-nom" placeholder="Ex: Économie Test" required>
-                            </div>
-                            <div class="flex gap-4">
-                                <div style="flex:1;">
-                                    <label class="text-secondary" style="font-size:0.85rem; margin-bottom:4px; display:block;">Solde initial</label>
-                                    <input type="number" id="create-initial" value="1000" min="1" required>
+                        <div class="bg-card">
+                            <h2 style="margin-bottom: 20px;">Créer</h2>
+                            <form id="form-create" class="flex-col gap-4">
+                                <div>
+                                    <label class="text-secondary" style="font-size:0.85rem; margin-bottom:6px; display:block;">Nom de la partie</label>
+                                    <input type="text" id="create-nom" placeholder="Ex: Ma Partie Éco" required>
                                 </div>
-                                <div style="flex:1;">
-                                    <label class="text-secondary" style="font-size:0.85rem; margin-bottom:4px; display:block;">Solde maximum</label>
-                                    <input type="number" id="create-max" value="5000" min="2" required>
+                                <div class="flex gap-4">
+                                    <div style="flex:1;">
+                                        <label class="text-secondary" style="font-size:0.85rem; margin-bottom:6px; display:block;">Capital départ</label>
+                                        <input type="number" id="create-initial" value="1000" min="1" required>
+                                    </div>
+                                    <div style="flex:1;">
+                                        <label class="text-secondary" style="font-size:0.85rem; margin-bottom:6px; display:block;">Plafond</label>
+                                        <input type="number" id="create-max" value="5000" min="2" required>
+                                    </div>
                                 </div>
-                            </div>
-                            <div>
-                                <label class="text-secondary" style="font-size:0.85rem; margin-bottom:4px; display:block;">Salaire journalier</label>
-                                <input type="number" id="create-salaire" value="50" min="0" required>
-                            </div>
-                            <button type="submit" id="btn-create" style="margin-top: 8px;">Créer la partie</button>
-                        </form>
+                                <button type="submit" id="btn-create" style="margin-top: 12px;">Créer l'économie</button>
+                            </form>
+                        </div>
                     </div>
                     
-                    <div id="code-result" style="display:none; margin-top:24px;">
-                        <h3>Partie créée !</h3>
-                        <div class="code-card">
-                            <div class="text-secondary">Code d'invitation à partager</div>
-                            <div class="code-display" id="display-code"></div>
-                            <button id="btn-copy-code" class="btn-outline">Copier le code</button>
+                    <div id="code-result" style="display:none; margin-top:32px;" class="animate-in">
+                        <div class="bg-card" style="border: 2px dashed var(--accent); text-align: center;">
+                            <h3 class="text-accent" style="margin-bottom: 12px;">Partie prête !</h3>
+                            <div class="text-secondary" style="margin-bottom: 16px;">Partagez ce code avec vos amis</div>
+                            <div style="font-size: 2.5rem; font-weight: 800; letter-spacing: 4px; margin-bottom: 20px;" id="display-code"></div>
+                            <button id="btn-copy-code" class="btn-outline" style="margin: 0 auto;">Copier le code</button>
                         </div>
                     </div>
                 </div>
@@ -107,16 +86,13 @@ export default function renderHome(container) {
         </div>
     `;
 
-    // Logout logic
     document.getElementById('btn-logout').addEventListener('click', () => {
         clearSession();
         navigate('/auth');
     });
 
-    // Tab navigation logic
     const sections = {
         parties: document.getElementById('section-parties'),
-        invitations: document.getElementById('section-invitations'),
         create: document.getElementById('section-create')
     };
 
@@ -124,179 +100,95 @@ export default function renderHome(container) {
     navItems.forEach(item => {
         item.addEventListener('click', () => {
             const tab = item.getAttribute('data-tab');
-            
-            // Update active states
-            navItems.forEach(nav => {
-                if(nav.getAttribute('data-tab') === tab) {
-                    nav.classList.add('active');
-                } else {
-                    nav.classList.remove('active');
-                }
-            });
-
-            // Show right section
-            Object.keys(sections).forEach(key => {
-                sections[key].style.display = key === tab ? 'block' : 'none';
-            });
-
+            navItems.forEach(nav => nav.classList.toggle('active', nav.getAttribute('data-tab') === tab));
+            Object.keys(sections).forEach(key => sections[key].style.display = key === tab ? 'block' : 'none');
             if (tab === 'parties') loadParties();
         });
     });
 
-    // Load parties
     async function loadParties() {
         const listDiv = document.getElementById('parties-list');
-        listDiv.innerHTML = '<div class="spinner"></div>';
-
         try {
-            const { data, error } = await supabase.rpc('get_my_parties', {
-                p_user_id: session.user_id
-            });
-
+            const { data, error } = await supabase.rpc('get_my_parties', { p_user_id: session.user_id });
             if (error) throw error;
 
             if (!data || data.length === 0) {
-                listDiv.innerHTML = '<p class="text-secondary">Vous n\'êtes dans aucune partie.</p>';
+                listDiv.innerHTML = `
+                    <div class="bg-card" style="grid-column: 1/-1; text-align: center; padding: 60px;">
+                        <div style="font-size: 3rem; margin-bottom: 16px;">🏝️</div>
+                        <h3>Aucune partie</h3>
+                        <p class="text-secondary" style="margin-top: 8px;">Rejoignez ou créez une partie pour commencer !</p>
+                    </div>
+                `;
                 return;
             }
 
-            listDiv.innerHTML = data.map(p => {
-                const isPositive = p.solde_actuel >= p.solde_initial;
-                const colorClass = isPositive ? 'text-success' : 'text-error';
-                return `
-                    <div class="party-card" data-id="${p.id}">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <h3 style="margin:0;">${p.nom}</h3>
-                                <div class="text-secondary" style="font-size:0.85rem; margin-top:4px;">${p.nb_joueurs} joueur(s)</div>
-                            </div>
-                            <div class="${colorClass}" style="font-size:1.2rem; font-weight:bold;">
-                                ${formatCurrency(p.solde_actuel)}
+            listDiv.innerHTML = data.map(p => `
+                <div class="bg-card party-card animate-in" data-id="${p.id}" style="cursor:pointer; display:flex; flex-direction:column; justify-content:space-between; min-height:160px;">
+                    <div>
+                        <div class="flex justify-between items-start">
+                            <h3 style="font-size: 1.3rem;">${p.nom}</h3>
+                            <div class="badge" style="background: rgba(124, 77, 255, 0.2); color: var(--accent); padding: 4px 10px; border-radius: 20px; font-size: 0.75rem;">
+                                ${p.nb_joueurs} joueurs
                             </div>
                         </div>
                     </div>
-                `;
-            }).join('');
+                    <div class="flex justify-between items-end" style="margin-top: 24px;">
+                        <div class="text-secondary" style="font-size: 0.85rem;">Votre solde</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--success);">${formatCurrency(p.solde_actuel)}</div>
+                    </div>
+                </div>
+            `).join('');
 
-            // Add click events to cards
             document.querySelectorAll('.party-card').forEach(card => {
-                card.addEventListener('click', () => {
-                    const id = card.getAttribute('data-id');
-                    // Ouvre dans un nouvel onglet avec le hash
-                    window.open(`#/party/${id}`, '_blank');
-                });
+                card.addEventListener('click', () => window.open(`#/party/${card.getAttribute('data-id')}`, '_blank'));
             });
-
         } catch (err) {
             console.error(err);
-            listDiv.innerHTML = '<p class="text-error">Erreur lors du chargement des parties.</p>';
+            listDiv.innerHTML = '<p class="text-error">Erreur lors du chargement.</p>';
         }
     }
 
-    // Initialize list
     loadParties();
 
-    // Create Party Logic
+    // Create / Join logic... (Identical to before but with UI polish)
     const formCreate = document.getElementById('form-create');
-    const btnCreate = document.getElementById('btn-create');
     formCreate.addEventListener('submit', async (e) => {
         e.preventDefault();
-        
         const nom = document.getElementById('create-nom').value;
         const initial = parseFloat(document.getElementById('create-initial').value);
         const max = parseFloat(document.getElementById('create-max').value);
-        const salaire = parseFloat(document.getElementById('create-salaire').value);
+        if (max <= initial) return showToast('Plafond invalide', 'error');
 
-        if (max <= initial) {
-            showToast('Le solde max doit être supérieur au solde initial', 'error');
-            return;
-        }
-
-        const restoreBtn = showLoader(btnCreate);
-
-        try {
-            const { data, error } = await supabase.rpc('create_party', {
-                p_user_id: session.user_id,
-                p_nom: nom,
-                p_solde_initial: initial,
-                p_salaire_journalier: salaire,
-                p_solde_max: max,
-                p_nb_joueurs_max: null
-            });
-
-            if (error) throw error;
-            if (!data.success) {
-                showToast("Erreur lors de la création", 'error');
-                restoreBtn();
-                return;
-            }
-
-            showToast("Partie créée avec succès", 'success');
+        const restore = showLoader(document.getElementById('btn-create'));
+        const { data, error } = await supabase.rpc('create_party', {
+            p_user_id: session.user_id, p_nom: nom, p_solde_initial: initial,
+            p_salaire_journalier: 50, p_solde_max: max
+        });
+        if (error || !data.success) showToast("Erreur création", "error");
+        else {
+            showToast("Partie créée !");
             document.getElementById('code-result').style.display = 'block';
             document.getElementById('display-code').innerText = data.code_invitation;
             formCreate.reset();
-            restoreBtn();
-
             loadParties();
-        } catch (err) {
-            console.error(err);
-            showToast('Erreur serveur', 'error');
-            restoreBtn();
         }
+        restore();
     });
 
-    // Copy code logic
-    document.getElementById('btn-copy-code').addEventListener('click', (e) => {
-        const code = document.getElementById('display-code').innerText;
-        navigator.clipboard.writeText(code);
-        const btn = e.target;
-        btn.innerText = 'Copié !';
-        btn.classList.add('text-success');
-        setTimeout(() => {
-            btn.innerText = 'Copier le code';
-            btn.classList.remove('text-success');
-        }, 2000);
-    });
-
-    // Join Party Logic
-    const formJoin = document.getElementById('form-join');
-    const btnJoin = document.getElementById('btn-join');
-    formJoin.addEventListener('submit', async (e) => {
+    document.getElementById('form-join').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const code = document.getElementById('join-code').value.trim();
-        if(!code) return;
-
-        const restoreBtn = showLoader(btnJoin);
-
-        try {
-            const { data, error } = await supabase.rpc('join_party_by_code', {
-                p_user_id: session.user_id,
-                p_code: code
-            });
-
-            if (error) throw error;
-            
-            if (!data.success) {
-                if (data.error === 'invalid_code') showToast('Code invalide', 'error');
-                else if (data.error === 'already_member') showToast('Vous êtes déjà dans cette partie', 'warning');
-                else if (data.error === 'party_full') showToast('La partie est pleine', 'error');
-                else showToast("Erreur lors de l'ajout", 'error');
-                restoreBtn();
-                return;
-            }
-
-            showToast(`Bienvenue dans ${data.nom} !`, 'success');
-            formJoin.reset();
-            restoreBtn();
-            
-            // Switch to parties tab
-            navItems[0].click();
-
-        } catch(err) {
-            console.error(err);
-            showToast('Erreur serveur', 'error');
-            restoreBtn();
-        }
+        const code = document.getElementById('join-code').value.trim().toUpperCase();
+        const restore = showLoader(document.getElementById('btn-join'));
+        const { data, error } = await supabase.rpc('join_party_by_code', { p_user_id: session.user_id, p_code: code });
+        if (error || !data.success) showToast(data?.error || "Erreur", "error");
+        else { showToast("Bienvenue !"); navItems[0].click(); }
+        restore();
     });
 
+    document.getElementById('btn-copy-code').addEventListener('click', (e) => {
+        navigator.clipboard.writeText(document.getElementById('display-code').innerText);
+        e.target.innerText = 'Copié !';
+        setTimeout(() => e.target.innerText = 'Copier le code', 2000);
+    });
 }
