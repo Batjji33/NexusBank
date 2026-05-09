@@ -102,9 +102,8 @@ export default function renderAuth(container) {
                 return;
             }
 
-            // Pour que le login fonctionne, on doit générer TOUJOURS le même hash pour un utilisateur.
-            // On crée un sel fixe basé sur le nom d'utilisateur (unique par personne).
-            const saltBase = (username + "nexusbank_salt").padEnd(22, '0').substring(0, 22);
+            // On crée un sel déterministe de exactement 22 caractères valides
+            let saltBase = (username + "nexusbank").repeat(3).replace(/[^a-zA-Z0-9]/g, 'a').substring(0, 22);
             const salt = "$2a$10$" + saltBase;
             const passwordHash = bcrypt.hashSync(password, salt);
 
