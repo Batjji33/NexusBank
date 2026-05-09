@@ -331,10 +331,15 @@ button:disabled {
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* Responsive */
+/* Navigation Mobile (Cachée par défaut sur PC) */
+.mobile-nav {
+    display: none;
+}
+
 /* Responsive Enhancements */
 @media (max-width: 900px) {
     .sidebar { display: none; }
-    .content-area { padding: 20px 16px 100px; } /* Space for mobile nav */
+    .content-area { padding: 20px 16px 100px; } 
     .navbar { padding: 0 16px; height: 60px; }
     .logo { font-size: 1.2rem; }
     
