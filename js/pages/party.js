@@ -22,19 +22,19 @@ export default function renderParty(container, partyId) {
         </div>
 
         <div class="content-area animate-in" style="max-width: 1600px;">
-            <!-- Ligne 1: Solde Full Width -->
-            <div class="hero-balance" style="margin-bottom: 32px; display: flex; flex-direction: column; gap: 24px;">
+            <!-- Bloc Solde avec bouton intégré (Desktop & Mobile) -->
+            <div class="hero-balance" style="margin-bottom: 40px; display: flex; flex-direction: column; gap: 24px;">
                 <div class="flex justify-between items-center wrap-mobile">
                     <div class="flex-col gap-1">
                         <div class="text-secondary" style="font-size: 0.9rem;">Solde disponible</div>
                         <div class="balance-amount" id="current-balance">0.00 €</div>
                         <div class="flex items-center gap-2">
                             <span id="max-balance-text" class="text-secondary" style="font-size: 0.8rem;">Plafond: --</span>
-                            <span class="text-accent desktop-hide" id="party-code-mobile" style="font-size: 0.8rem; font-weight: bold; background: rgba(124, 77, 255, 0.1); padding: 2px 8px; border-radius: 4px;">Code: ...</span>
+                            <span class="text-accent desktop-hide" id="party-code-mobile" style="font-size: 0.8rem; font-weight: bold; background: rgba(124, 77, 255, 0.1); padding: 2px 8px; border-radius: 4px;">...</span>
                         </div>
                     </div>
                     
-                    <button id="btn-virement-desktop" style="padding: 16px 32px; font-size: 1.1rem; border-radius: 16px;">
+                    <button id="btn-virement-main" style="padding: 16px 32px; font-size: 1.1rem; border-radius: 16px; width: auto;">
                         <span>💸</span> Nouveau Virement
                     </button>
                 </div>
@@ -42,7 +42,7 @@ export default function renderParty(container, partyId) {
                 <div class="progress-bar" style="height: 12px;"><div class="progress-fill" id="balance-progress"></div></div>
             </div>
 
-            <!-- Ligne 2: Grille 3 Colonnes -->
+            <!-- Grille des blocs -->
             <div class="dashboard-grid pro-layout">
                 <div id="admin-panel" class="bg-card animate-in" style="display:none; border: 1px solid var(--accent); height: fit-content;">
                     <h2 style="font-size: 1.1rem; color: var(--accent); margin-bottom: 24px; display: flex; align-items: center; gap: 10px;">
@@ -60,7 +60,7 @@ export default function renderParty(container, partyId) {
                             </div>
                             <div class="flex gap-4">
                                 <div class="flex-col gap-2" style="flex: 1;"><label class="text-secondary" style="font-size: 0.75rem; font-weight: 600;">Taxe (%)</label><input type="number" id="input-taxe-percent" style="height: 44px;"></div>
-                                <div class="flex-col gap-2" style="flex: 1;"><label class="text-secondary" style="font-size: 0.75rem; font-weight: 600;">Frais (€)</label><input type="number" id="input-frais-fixe" style="height: 44px;"></div>
+                                <div style="flex: 1;"><label class="text-secondary" style="font-size: 0.75rem; font-weight: 600;">Frais (€)</label><input type="number" id="input-frais-fixe" style="height: 44px;"></div>
                             </div>
                         </div>
                         <button id="btn-save-settings" style="width: 100%; height: 50px;">Enregistrer les réglages</button>
@@ -79,8 +79,7 @@ export default function renderParty(container, partyId) {
             </div>
         </div>
 
-        <button class="fab mobile-only-fab" id="btn-new-transfer">💸</button>
-
+        <!-- Modale de virement -->
         <div class="modal-overlay" id="transfer-modal">
             <div class="modal-content animate-in">
                 <h2 style="text-align: center;">Nouveau Virement</h2>
@@ -108,14 +107,14 @@ export default function renderParty(container, partyId) {
     const style = document.createElement('style');
     style.textContent = `
         @media (min-width: 901px) {
-            .mobile-only-fab { display: none !important; }
             .desktop-hide { display: none !important; }
         }
         @media (max-width: 900px) {
-            #btn-virement-desktop { display: none !important; }
             .mobile-hide-info { display: none !important; }
-            .wrap-mobile { flex-direction: column; align-items: flex-start !important; gap: 20px; }
-            .fab { bottom: 130px !important; right: 24px !important; }
+            .wrap-mobile { flex-direction: column; align-items: stretch !important; gap: 24px; }
+            #btn-virement-main { width: 100%; height: 60px; font-weight: 700; }
+            .dashboard-grid { gap: 32px !important; } /* Plus d'espace entre les blocs sur mobile */
+            .content-area { padding-bottom: 120px !important; }
         }
         @media (min-width: 1100px) {
             .pro-layout { display: grid; grid-template-columns: ${partyData?.is_admin ? '320px 1fr 1fr' : '1fr 1.5fr'}; gap: 24px; align-items: start; }
@@ -195,8 +194,7 @@ export default function renderParty(container, partyId) {
         modal.classList.add('active');
     };
 
-    document.getElementById('btn-virement-desktop').onclick = openTransfer;
-    document.getElementById('btn-new-transfer').onclick = openTransfer;
+    document.getElementById('btn-virement-main').onclick = openTransfer;
     document.getElementById('btn-cancel-transfer').onclick = () => modal.classList.remove('active');
 
     document.getElementById('btn-toggle-salaire').onclick = async (e) => {
