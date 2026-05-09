@@ -52,7 +52,7 @@ export default function renderAuth(container) {
 
     async function handleAuth(e) {
         e.preventDefault();
-        const username = document.getElementById('username').value.trim();
+        const username = document.getElementById('username').value.trim().toLowerCase();
         const password = document.getElementById('password').value;
         const btnSubmit = document.getElementById('btn-auth-submit');
 
