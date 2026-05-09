@@ -1,7 +1,7 @@
-// js/pages/party.js
 import { supabase } from '../supabase.js';
-import { getSession } from '../state.js';
+import { getSession, clearSession } from '../state.js';
 import { showToast, formatCurrency, showLoader } from '../utils.js';
+import { navigate } from '../router.js';
 
 export default function renderParty(container, partyId) {
     const session = getSession();
@@ -10,13 +10,14 @@ export default function renderParty(container, partyId) {
 
     container.innerHTML = `
         <div class="navbar animate-in">
-            <div class="logo">Dashboard</div>
-            <div class="user-actions flex items-center gap-3">
+            <div class="logo" id="nav-logo-home" style="cursor:pointer;" title="Retour à l'accueil">Dashboard</div>
+            <div class="user-actions flex items-center gap-4">
                 <div class="flex-col" style="text-align: right;">
                     <span id="party-name" style="font-weight: 600; font-size: 0.95rem;">Chargement...</span>
                     <span class="text-secondary" style="font-size: 0.75rem;">Code: <strong id="party-code" class="text-accent">...</strong></span>
                 </div>
                 <div id="admin-badge" style="display:none; background: var(--accent); color: white; padding: 2px 8px; border-radius: 6px; font-size: 0.65rem; font-weight: bold;">ADMIN</div>
+                <button class="btn-outline" id="btn-party-logout" style="padding: 8px 16px; font-size: 0.8rem;">Déconnexion</button>
             </div>
         </div>
 
@@ -133,6 +134,9 @@ export default function renderParty(container, partyId) {
     document.head.appendChild(style);
 
     // Elements
+    document.getElementById('nav-logo-home').onclick = () => navigate('/home');
+    document.getElementById('btn-party-logout').onclick = () => { clearSession(); navigate('/auth'); };
+
     const elInputSalaire = document.getElementById('input-salaire-amount');
     const elInputTaxe = document.getElementById('input-taxe-percent');
     const elInputFrais = document.getElementById('input-frais-fixe');
