@@ -48,22 +48,29 @@ export default function renderParty(container, partyId) {
                     <h2 style="font-size: 1.1rem; color: var(--accent); margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
                         🛡️ Administration
                     </h2>
-                    <div class="flex-col gap-4">
-                        <div class="flex justify-between items-center p-3" style="background: rgba(255,255,255,0.03); border-radius: 12px;">
-                            <div id="status-salaire" style="font-size: 0.8rem; font-weight: 600;">...</div>
-                            <button id="btn-toggle-salaire" class="btn-outline" style="height: 28px; padding: 0 10px; font-size: 0.7rem;">ON/OFF</button>
+                    <div class="flex-col gap-6">
+                        <div class="flex justify-between items-center p-4" style="background: rgba(255,255,255,0.03); border-radius: 16px;">
+                            <div id="status-salaire" style="font-size: 0.85rem; font-weight: 600;">...</div>
+                            <button id="btn-toggle-salaire" class="btn-outline" style="height: 32px; padding: 0 16px; font-size: 0.75rem;">ON/OFF</button>
                         </div>
-                        <div class="flex-col gap-3">
-                            <div>
-                                <label class="text-secondary" style="font-size: 0.7rem; margin-bottom:4px; display:block;">Salaire quotidien (€)</label>
-                                <input type="number" id="input-salaire-amount" style="height: 38px;">
+                        
+                        <div class="flex-col gap-4">
+                            <div class="flex-col gap-2">
+                                <label class="text-secondary" style="font-size: 0.75rem; font-weight: 600;">Salaire quotidien (€)</label>
+                                <input type="number" id="input-salaire-amount" style="height: 44px; font-size: 1rem;">
                             </div>
-                            <div class="flex gap-2">
-                                <div style="flex: 1;"><label class="text-secondary" style="font-size: 0.7rem; margin-bottom:4px; display:block;">Taxe (%)</label><input type="number" id="input-taxe-percent" style="height: 38px;"></div>
-                                <div style="flex: 1;"><label class="text-secondary" style="font-size: 0.7rem; margin-bottom:4px; display:block;">Frais (€)</label><input type="number" id="input-frais-fixe" style="height: 38px;"></div>
+                            <div class="flex gap-4">
+                                <div class="flex-col gap-2" style="flex: 1;">
+                                    <label class="text-secondary" style="font-size: 0.75rem; font-weight: 600;">Taxe (%)</label>
+                                    <input type="number" id="input-taxe-percent" style="height: 44px; font-size: 1rem;">
+                                </div>
+                                <div class="flex-col gap-2" style="flex: 1;">
+                                    <label class="text-secondary" style="font-size: 0.75rem; font-weight: 600;">Frais fixes (€)</label>
+                                    <input type="number" id="input-frais-fixe" style="height: 44px; font-size: 1rem;">
+                                </div>
                             </div>
                         </div>
-                        <button id="btn-save-settings" style="width: 100%; height: 44px; margin-top: 8px;">Appliquer</button>
+                        <button id="btn-save-settings" style="width: 100%; height: 50px; margin-top: 12px;">Enregistrer les réglages</button>
                     </div>
                 </div>
 

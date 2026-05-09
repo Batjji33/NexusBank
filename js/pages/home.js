@@ -42,33 +42,33 @@ export default function renderHome(container) {
 
                 <!-- Section Créer / Rejoindre -->
                 <div id="section-create" style="display:none;">
-                    <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 32px; align-items: start;">
-                        <div class="bg-card">
-                            <h2 style="margin-bottom: 20px;">Rejoindre</h2>
+                    <div class="flex-col gap-6" style="max-width: 800px; margin: 0 auto;">
+                        <div class="bg-card animate-in">
+                            <h2 style="margin-bottom: 24px;">Rejoindre une économie</h2>
                             <form id="form-join" class="flex-col gap-4">
-                                <input type="text" id="join-code" placeholder="Code d'invitation (ex: A1B2C3)" required style="text-transform: uppercase;">
-                                <button type="submit" id="btn-join">Rejoindre la partie</button>
+                                <input type="text" id="join-code" placeholder="Code d'invitation (ex: A1B2C3)" required style="text-transform: uppercase; height: 56px; font-size: 1.1rem; letter-spacing: 2px;">
+                                <button type="submit" id="btn-join" style="height: 56px;">Rejoindre la partie</button>
                             </form>
                         </div>
 
-                        <div class="bg-card">
-                            <h2 style="margin-bottom: 20px;">Créer</h2>
+                        <div class="bg-card animate-in" style="animation-delay: 0.1s;">
+                            <h2 style="margin-bottom: 24px;">Créer une nouvelle économie</h2>
                             <form id="form-create" class="flex-col gap-4">
-                                <div>
-                                    <label class="text-secondary" style="font-size:0.85rem; margin-bottom:6px; display:block;">Nom de la partie</label>
+                                <div class="flex-col gap-2">
+                                    <label class="text-secondary" style="font-size:0.85rem; font-weight: 500;">Nom de la partie</label>
                                     <input type="text" id="create-nom" placeholder="Ex: Ma Partie Éco" required>
                                 </div>
                                 <div class="flex gap-4">
-                                    <div style="flex:1;">
-                                        <label class="text-secondary" style="font-size:0.85rem; margin-bottom:6px; display:block;">Capital départ</label>
+                                    <div class="flex-col gap-2" style="flex:1;">
+                                        <label class="text-secondary" style="font-size:0.85rem; font-weight: 500;">Capital départ (€)</label>
                                         <input type="number" id="create-initial" value="1000" min="1" required>
                                     </div>
-                                    <div style="flex:1;">
-                                        <label class="text-secondary" style="font-size:0.85rem; margin-bottom:6px; display:block;">Plafond</label>
+                                    <div class="flex-col gap-2" style="flex:1;">
+                                        <label class="text-secondary" style="font-size:0.85rem; font-weight: 500;">Plafond (€)</label>
                                         <input type="number" id="create-max" value="5000" min="2" required>
                                     </div>
                                 </div>
-                                <button type="submit" id="btn-create" style="margin-top: 12px;">Créer l'économie</button>
+                                <button type="submit" id="btn-create" style="margin-top: 12px; height: 56px;">Créer l'économie</button>
                             </form>
                         </div>
                     </div>
