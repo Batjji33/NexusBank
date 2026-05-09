@@ -27,8 +27,8 @@ export default function renderHome(container) {
             </div>
 
             <div class="mobile-nav">
-                <div class="nav-item active" data-tab="parties"><span>🏠</span></div>
-                <div class="nav-item" data-tab="create"><span>➕</span></div>
+                <div class="nav-item active" data-tab="parties"><span>🏠</span>Parties</div>
+                <div class="nav-item" data-tab="create"><span>➕</span>Nouveau</div>
             </div>
 
             <div class="content-area animate-in">

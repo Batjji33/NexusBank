@@ -331,43 +331,72 @@ button:disabled {
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* Responsive */
+/* Responsive Enhancements */
 @media (max-width: 900px) {
     .sidebar { display: none; }
-    .content-area { padding: 20px; }
-    .navbar { padding: 0 16px; }
+    .content-area { padding: 20px 16px 100px; } /* Space for mobile nav */
+    .navbar { padding: 0 16px; height: 60px; }
+    .logo { font-size: 1.2rem; }
     
     .mobile-nav {
         display: flex;
         position: fixed;
         bottom: 0; left: 0; width: 100%;
-        background: rgba(5, 5, 8, 0.9);
-        backdrop-filter: blur(15px);
+        background: rgba(5, 5, 8, 0.95);
+        backdrop-filter: blur(20px);
         border-top: 1px solid var(--glass-border);
-        padding: 10px 0 20px;
+        padding: 12px 0 calc(12px + env(safe-area-inset-bottom));
         justify-content: space-around;
         z-index: 100;
+        box-shadow: 0 -10px 30px rgba(0,0,0,0.5);
+    }
+
+    .nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.7rem;
+        color: var(--text-secondary);
+        transition: var(--transition);
+    }
+
+    .nav-item.active {
+        color: var(--accent);
+    }
+
+    .nav-item span {
+        font-size: 1.4rem;
     }
 }
 
-@media (min-width: 901px) {
-    .mobile-nav { display: none; }
+@media (max-width: 600px) {
+    .balance-amount { font-size: 2.2rem; }
+    .hero-balance { padding: 24px 20px; }
+    .content-area { padding: 16px 12px 100px; }
+    h2 { font-size: 1.2rem; }
+    
+    .bg-card { padding: 20px 16px; }
+    
+    .modal-content {
+        max-width: 95%;
+        padding: 24px 20px;
+        margin: 10px;
+    }
 }
 
-/* FAB */
-.fab {
-    position: fixed;
-    bottom: 32px;
-    right: 32px;
-    width: 64px;
-    height: 64px;
-    border-radius: 32px;
-    font-size: 1.8rem;
-    box-shadow: 0 8px 30px rgba(124, 77, 255, 0.5);
-    z-index: 90;
-}
-
-@media (max-width: 900px) {
-    .fab { bottom: 90px; right: 20px; width: 56px; height: 56px; }
+/* Fix for Toast on Mobile */
+@media (max-width: 600px) {
+    #toast-container {
+        top: auto;
+        bottom: 110px;
+        left: 16px;
+        right: 16px;
+        align-items: stretch;
+    }
+    .toast {
+        min-width: 0;
+    }
 }
 
 #toast-container {
