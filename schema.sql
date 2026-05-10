@@ -19,6 +19,9 @@ CREATE TABLE parties (
   solde_initial NUMERIC NOT NULL CHECK (solde_initial > 0),
   salaire_journalier NUMERIC NOT NULL DEFAULT 0 CHECK (salaire_journalier >= 0),
   salaire_actif BOOLEAN DEFAULT TRUE,
+  taxe_pourcentage NUMERIC NOT NULL DEFAULT 5,
+  frais_fixe NUMERIC NOT NULL DEFAULT 2,
+  derniere_distribution_salaire DATE DEFAULT NULL,
   solde_max NUMERIC NOT NULL,
   nb_joueurs_max INTEGER DEFAULT NULL,
   date_creation TIMESTAMPTZ DEFAULT NOW(),
@@ -275,7 +278,7 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE FUNCTION distribute_salaries()
+CREATE OR REPLACE FUNCTION distribute_salaries(p_party_id UUID)
 RETURNS VOID
 LANGUAGE plpgsql SECURITY DEFINER
 AS $$
@@ -286,24 +289,59 @@ DECLARE
   v_nouveau_solde NUMERIC;
   v_gain_reel NUMERIC;
 BEGIN
-  FOR v_party IN SELECT * FROM parties WHERE salaire_actif = TRUE AND est_archivee = FALSE LOOP
+  -- Verrouillage pour éviter les doublons si plusieurs utilisateurs chargent le dashboard en même temps
+  SELECT * INTO v_party FROM parties WHERE id = p_party_id FOR UPDATE;
+
+  IF v_party.salaire_actif = TRUE 
+     AND v_party.est_archivee = FALSE 
+     AND (v_party.derniere_distribution_salaire IS NULL OR v_party.derniere_distribution_salaire < CURRENT_DATE) THEN
+    
     FOREACH v_player_id IN ARRAY v_party.joueurs LOOP
       SELECT solde INTO v_solde_actuel
       FROM player_balances
-      WHERE user_id = v_player_id AND party_id = v_party.id;
+      WHERE user_id = v_player_id AND party_id = p_party_id;
 
-      v_nouveau_solde := LEAST(v_solde_actuel + v_party.salaire_journalier, v_party.solde_max);
-      v_gain_reel := v_nouveau_solde - v_solde_actuel;
+      IF v_solde_actuel IS NOT NULL THEN
+        v_nouveau_solde := LEAST(v_solde_actuel + v_party.salaire_journalier, v_party.solde_max);
+        v_gain_reel := v_nouveau_solde - v_solde_actuel;
 
-      IF v_gain_reel > 0 THEN
-        UPDATE player_balances SET solde = v_nouveau_solde, derniere_maj = NOW()
-        WHERE user_id = v_player_id AND party_id = v_party.id;
+        IF v_gain_reel > 0 THEN
+          UPDATE player_balances SET solde = v_nouveau_solde, derniere_maj = NOW()
+          WHERE user_id = v_player_id AND party_id = p_party_id;
 
-        INSERT INTO transactions (partie_id, emetteur_id, receveur_id, montant, taxe, montant_recu, cout_total_emetteur, statut)
-        VALUES (v_party.id, '00000000-0000-0000-0000-000000000000', v_player_id, v_party.salaire_journalier, 0, v_gain_reel, 0, 'validée');
+          INSERT INTO transactions (partie_id, emetteur_id, receveur_id, montant, taxe, montant_recu, cout_total_emetteur, statut)
+          VALUES (p_party_id, '00000000-0000-0000-0000-000000000000', v_player_id, v_party.salaire_journalier, 0, v_gain_reel, 0, 'validée');
+        END IF;
       END IF;
     END LOOP;
-  END LOOP;
+
+    UPDATE parties SET derniere_distribution_salaire = CURRENT_DATE WHERE id = p_party_id;
+  END IF;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION update_party_settings(
+  p_user_id UUID,
+  p_party_id UUID,
+  p_salaire_journalier NUMERIC,
+  p_taxe_pourcentage NUMERIC,
+  p_frais_fixe NUMERIC
+)
+RETURNS JSON
+LANGUAGE plpgsql SECURITY DEFINER
+AS $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM parties WHERE id = p_party_id AND createur_id = p_user_id) THEN
+    RETURN json_build_object('success', false, 'error', 'non_autorisé');
+  END IF;
+
+  UPDATE parties 
+  SET salaire_journalier = p_salaire_journalier,
+      taxe_pourcentage = p_taxe_pourcentage,
+      frais_fixe = p_frais_fixe
+  WHERE id = p_party_id;
+
+  RETURN json_build_object('success', true);
 END;
 $$;
 
@@ -370,6 +408,9 @@ DECLARE
   v_classement JSON;
   v_historique JSON;
 BEGIN
+  -- Déclenchement automatique de la distribution du salaire si nécessaire
+  PERFORM distribute_salaries(p_party_id);
+
   SELECT * INTO v_party FROM parties WHERE id = p_party_id;
   
   IF NOT FOUND OR NOT (p_user_id = ANY(v_party.joueurs)) THEN
@@ -411,10 +452,13 @@ BEGIN
   RETURN json_build_object(
     'success', true,
     'party', json_build_object(
-      'id', v_party.id,
       'nom', v_party.nom,
       'solde_max', v_party.solde_max,
-      'code_invitation', v_party.code_invitation
+      'code_invitation', v_party.code_invitation,
+      'salaire_actif', v_party.salaire_actif,
+      'salaire_journalier', v_party.salaire_journalier,
+      'taxe_pourcentage', v_party.taxe_pourcentage,
+      'frais_fixe', v_party.frais_fixe
     ),
     'solde_actuel', v_solde_actuel,
     'classement', coalesce(v_classement, '[]'::json),

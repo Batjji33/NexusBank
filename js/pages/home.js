@@ -9,7 +9,14 @@ export default function renderHome(container) {
 
     container.innerHTML = `
         <div class="navbar">
-            <div class="logo">NexusBank</div>
+            <div class="logo-container">
+                <div class="logo-square">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M4 4V20H7L17 8V20H20V4H17L7 16V4H4Z" fill="white"/>
+                    </svg>
+                </div>
+                <div class="logo">NexusBank</div>
+            </div>
             <div class="user-actions flex items-center gap-4">
                 <span style="font-weight: 500;">${session.username}</span>
                 <button class="btn-outline" id="btn-logout" style="padding: 8px 16px; font-size: 0.85rem;">Déconnexion</button>

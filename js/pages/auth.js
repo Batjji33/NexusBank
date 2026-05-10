@@ -11,9 +11,16 @@ export default function renderAuth(container) {
         container.innerHTML = `
             <div class="animate-in" style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;">
                 <div class="bg-card" style="width: 100%; max-width: 400px; padding: 40px;">
-                    <div style="text-align: center; margin-bottom: 32px;">
-                        <h1 class="logo" style="font-size: 2.5rem; margin-bottom: 8px;">NexusBank</h1>
-                        <p class="text-secondary">${isLogin ? 'Ravi de vous revoir !' : 'Créez votre compte bancaire'}</p>
+                    <div style="text-align: center; margin-bottom: 32px; display: flex; flex-direction: column; align-items: center; gap: 16px;">
+                        <div class="logo-square" style="width: 64px; height: 64px; border-radius: 16px;">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 40px; height: 40px;">
+                                <path d="M4 4V20H7L17 8V20H20V4H17L7 16V4H4Z" fill="white"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h1 class="logo" style="font-size: 2.5rem; margin-bottom: 8px;">NexusBank</h1>
+                            <p class="text-secondary">${isLogin ? 'Ravi de vous revoir !' : 'Créez votre compte bancaire'}</p>
+                        </div>
                     </div>
 
                     <form id="auth-form" class="flex-col gap-4">
