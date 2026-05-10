@@ -396,11 +396,16 @@ export default function renderParty(container, partyId) {
         const val = parseFloat(e.target.value);
         if (isNaN(val) || val <= 0) { document.getElementById('transfer-recap').style.display = 'none'; return; }
         const tPercent = partyData.party.taxe_pourcentage, fFixe = partyData.party.frais_fixe;
-        const taxe = Math.round(val * (tPercent / 100) * 100) / 100;
-        document.getElementById('recap-base').innerText = formatCurrency(val);
-        document.getElementById('recap-taxe-label').innerText = `Taxe (${tPercent}%)`;
+        
+        // Formule TVA incluse
+        const tauxDecimal = tPercent / 100;
+        const taxe = Math.round((val * tauxDecimal / (1 + tauxDecimal)) * 100) / 100;
+        const montantNet = Math.round((val - taxe) * 100) / 100;
+
+        document.getElementById('recap-base').innerHTML = `<span class="text-secondary" style="font-size: 0.75rem;">Reçu par destinataire:</span> ${formatCurrency(montantNet)}`;
+        document.getElementById('recap-taxe-label').innerText = `Taxe incluse (${tPercent}%)`;
         document.getElementById('recap-taxe').innerText = `- ${formatCurrency(taxe)}`;
-        document.getElementById('recap-frais-label').innerText = `- ${formatCurrency(fFixe)}`;
+        document.getElementById('recap-frais-label').innerText = `+ ${formatCurrency(fFixe)} (Frais fixe)`;
         document.getElementById('recap-debit').innerText = formatCurrency(val + fFixe);
         document.getElementById('transfer-recap').style.display = 'block';
         document.getElementById('btn-go-to-step-2').disabled = false;

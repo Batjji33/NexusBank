@@ -243,8 +243,8 @@ BEGIN
   SELECT solde INTO v_solde_emetteur FROM player_balances WHERE user_id = p_emetteur_id AND party_id = p_party_id;
   SELECT solde INTO v_solde_receveur FROM player_balances WHERE user_id = v_receveur.id AND party_id = p_party_id;
 
-  -- Calcul dynamique basé sur les réglages de la partie
-  v_taxe := round(p_montant * (v_party.taxe_pourcentage / 100), 2);
+  -- Nouvelle formule de taxe incluse (TVA) : montant * (taux/100) / (1 + taux/100)
+  v_taxe := round((p_montant * (v_party.taxe_pourcentage / 100)) / (1 + (v_party.taxe_pourcentage / 100)), 2);
   v_montant_recu := p_montant - v_taxe;
   v_cout_total := p_montant + v_party.frais_fixe;
 
