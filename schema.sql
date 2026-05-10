@@ -57,6 +57,7 @@ CREATE TABLE transactions (
   cout_total_emetteur NUMERIC NOT NULL,
   statut TEXT NOT NULL CHECK (statut IN ('validée', 'échouée')),
   raison_echec TEXT DEFAULT NULL,
+  libelle TEXT DEFAULT NULL,
   date TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -205,7 +206,8 @@ CREATE OR REPLACE FUNCTION send_transaction(
   p_emetteur_id UUID,
   p_party_id UUID,
   p_receveur_username TEXT,
-  p_montant NUMERIC
+  p_montant NUMERIC,
+  p_libelle TEXT DEFAULT NULL
 )
 RETURNS JSON
 LANGUAGE plpgsql SECURITY DEFINER
@@ -241,19 +243,20 @@ BEGIN
   SELECT solde INTO v_solde_emetteur FROM player_balances WHERE user_id = p_emetteur_id AND party_id = p_party_id;
   SELECT solde INTO v_solde_receveur FROM player_balances WHERE user_id = v_receveur.id AND party_id = p_party_id;
 
-  v_taxe := round(p_montant * 0.05, 2);
+  -- Calcul dynamique basé sur les réglages de la partie
+  v_taxe := round(p_montant * (v_party.taxe_pourcentage / 100), 2);
   v_montant_recu := p_montant - v_taxe;
-  v_cout_total := p_montant + 2;
+  v_cout_total := p_montant + v_party.frais_fixe;
 
   IF v_solde_emetteur < v_cout_total THEN
-    INSERT INTO transactions (partie_id, emetteur_id, receveur_id, montant, taxe, montant_recu, cout_total_emetteur, statut, raison_echec)
-    VALUES (p_party_id, p_emetteur_id, v_receveur.id, p_montant, v_taxe, v_montant_recu, v_cout_total, 'échouée', 'solde_insuffisant');
+    INSERT INTO transactions (partie_id, emetteur_id, receveur_id, montant, taxe, montant_recu, cout_total_emetteur, statut, raison_echec, libelle)
+    VALUES (p_party_id, p_emetteur_id, v_receveur.id, p_montant, v_taxe, v_montant_recu, v_cout_total, 'échouée', 'solde_insuffisant', p_libelle);
     RETURN json_build_object('success', false, 'error', 'solde_insuffisant');
   END IF;
 
   IF v_solde_receveur + v_montant_recu > v_party.solde_max THEN
-    INSERT INTO transactions (partie_id, emetteur_id, receveur_id, montant, taxe, montant_recu, cout_total_emetteur, statut, raison_echec)
-    VALUES (p_party_id, p_emetteur_id, v_receveur.id, p_montant, v_taxe, v_montant_recu, v_cout_total, 'échouée', 'plafond_receveur_atteint');
+    INSERT INTO transactions (partie_id, emetteur_id, receveur_id, montant, taxe, montant_recu, cout_total_emetteur, statut, raison_echec, libelle)
+    VALUES (p_party_id, p_emetteur_id, v_receveur.id, p_montant, v_taxe, v_montant_recu, v_cout_total, 'échouée', 'plafond_receveur_atteint', p_libelle);
     RETURN json_build_object('success', false, 'error', 'plafond_receveur_atteint');
   END IF;
 
@@ -263,8 +266,8 @@ BEGIN
   UPDATE player_balances SET solde = solde + v_montant_recu, derniere_maj = NOW()
   WHERE user_id = v_receveur.id AND party_id = p_party_id;
 
-  INSERT INTO transactions (partie_id, emetteur_id, receveur_id, montant, taxe, montant_recu, cout_total_emetteur, statut)
-  VALUES (p_party_id, p_emetteur_id, v_receveur.id, p_montant, v_taxe, v_montant_recu, v_cout_total, 'validée')
+  INSERT INTO transactions (partie_id, emetteur_id, receveur_id, montant, taxe, montant_recu, cout_total_emetteur, statut, libelle)
+  VALUES (p_party_id, p_emetteur_id, v_receveur.id, p_montant, v_taxe, v_montant_recu, v_cout_total, 'validée', p_libelle)
   RETURNING id INTO v_transaction_id;
 
   RETURN json_build_object(
@@ -272,7 +275,7 @@ BEGIN
     'transaction_id', v_transaction_id,
     'montant_recu', v_montant_recu,
     'taxe', v_taxe,
-    'frais_fixe', 2,
+    'frais_fixe', v_party.frais_fixe,
     'nouveau_solde_emetteur', v_solde_emetteur - v_cout_total
   );
 END;
@@ -443,6 +446,7 @@ BEGIN
       'cout_total_emetteur', t.cout_total_emetteur,
       'statut', t.statut,
       'raison_echec', t.raison_echec,
+      'libelle', t.libelle,
       'date', t.date
     ) ORDER BY t.date DESC
   ) INTO v_historique

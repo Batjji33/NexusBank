@@ -92,7 +92,7 @@ export default function renderParty(container, partyId) {
             </div>
         </div>
 
-        <!-- Modale de virement avec Double Validation -->
+        <!-- Modale de virement avec Libellé et Double Validation -->
         <div class="modal-overlay" id="transfer-modal">
             <div class="modal-content animate-in">
                 <!-- Etape 1: Saisie -->
@@ -107,6 +107,10 @@ export default function renderParty(container, partyId) {
                             <div>
                                 <label class="text-secondary" style="font-size: 0.8rem; margin-bottom: 6px; display: block;">Montant (€)</label>
                                 <input type="number" id="transfer-amount" min="1" step="0.01" placeholder="0.00" required>
+                            </div>
+                            <div>
+                                <label class="text-secondary" style="font-size: 0.8rem; margin-bottom: 6px; display: block;">Motif (Libellé)</label>
+                                <input type="text" id="transfer-libelle" placeholder="Ex: Pizza, Remboursement..." maxlength="50">
                             </div>
                             
                             <div class="recap-box" id="transfer-recap" style="display:none; background: rgba(255,255,255,0.03); padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05);">
@@ -130,6 +134,7 @@ export default function renderParty(container, partyId) {
                         <div style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 12px;">Vous allez envoyer</div>
                         <div style="font-size: 2.2rem; font-weight: 800; color: var(--accent);" id="final-confirm-amount">0.00 €</div>
                         <div style="font-size: 1rem; margin-top: 12px;">à <strong id="final-confirm-receiver" style="color:white;">...</strong></div>
+                        <div id="final-confirm-libelle" style="font-style: italic; color: var(--text-secondary); margin-top: 16px; font-size: 0.9rem;"></div>
                     </div>
                     
                     <div class="bg-card" style="background: rgba(255,255,255,0.02); border: 1px dashed var(--accent); padding: 16px; margin-bottom: 32px; font-size: 0.85rem; text-align: center;">
@@ -226,7 +231,11 @@ export default function renderParty(container, partyId) {
                         <div class="history-item" style="padding: 12px;">
                             <div class="flex items-center gap-3">
                                 <div class="history-icon" style="width: 36px; height: 36px; font-size: 1rem;">${isSystem ? '💰' : (amIEmiter ? '↗️' : '↙️')}</div>
-                                <div><div style="font-weight: 500; font-size: 0.85rem;">${isSystem ? 'Salaire' : (amIEmiter ? t.receveur_username : t.emetteur_username)}</div><div class="text-secondary" style="font-size: 0.65rem;">${new Date(t.date).toLocaleTimeString()}</div></div>
+                                <div>
+                                    <div style="font-weight: 500; font-size: 0.85rem;">${isSystem ? 'Salaire' : (amIEmiter ? t.receveur_username : t.emetteur_username)}</div>
+                                    <div class="text-secondary" style="font-size: 0.75rem; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${t.libelle || 'Virement bancaire'}</div>
+                                    <div class="text-secondary" style="font-size: 0.65rem;">${new Date(t.date).toLocaleTimeString()}</div>
+                                </div>
                             </div>
                             <div class="${amIEmiter ? 'text-error' : 'text-success'}" style="font-weight: 700; font-size: 0.9rem;">${amIEmiter ? '-' : '+'}${formatCurrency(isSystem ? t.montant_recu : (amIEmiter ? t.cout_total_emetteur : t.montant_recu))}</div>
                         </div>
@@ -300,6 +309,7 @@ export default function renderParty(container, partyId) {
         document.getElementById('transfer-step-1').style.display = 'block';
         document.getElementById('transfer-step-2').style.display = 'none';
         document.getElementById('transfer-success').style.display = 'none';
+        document.getElementById('transfer-libelle').value = "";
         modal.classList.add('active');
     };
 
@@ -309,8 +319,10 @@ export default function renderParty(container, partyId) {
     // Navigation entre étapes
     document.getElementById('transfer-form').onsubmit = (e) => {
         e.preventDefault();
+        const libelle = document.getElementById('transfer-libelle').value.trim();
         document.getElementById('final-confirm-amount').innerText = formatCurrency(document.getElementById('transfer-amount').value);
         document.getElementById('final-confirm-receiver').innerText = selectReceiver.value;
+        document.getElementById('final-confirm-libelle').innerText = libelle ? `Motif: "${libelle}"` : "Sans motif particulier";
         document.getElementById('transfer-step-1').style.display = 'none';
         document.getElementById('transfer-step-2').style.display = 'block';
     };
@@ -327,7 +339,8 @@ export default function renderParty(container, partyId) {
             p_emetteur_id: session.user_id, 
             p_party_id: partyId, 
             p_receveur_username: selectReceiver.value, 
-            p_montant: parseFloat(document.getElementById('transfer-amount').value) 
+            p_montant: parseFloat(document.getElementById('transfer-amount').value),
+            p_libelle: document.getElementById('transfer-libelle').value.trim() || null
         });
         
         if (error || !data.success) {
