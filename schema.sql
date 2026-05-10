@@ -407,6 +407,7 @@ DECLARE
   v_solde_actuel NUMERIC;
   v_classement JSON;
   v_historique JSON;
+  v_historique_complet JSON;
 BEGIN
   -- Déclenchement automatique de la distribution du salaire si nécessaire
   PERFORM distribute_salaries(p_party_id);
@@ -449,10 +450,25 @@ BEGIN
   WHERE t.partie_id = p_party_id AND (t.emetteur_id = p_user_id OR t.receveur_id = p_user_id)
   LIMIT 10;
 
+  SELECT json_agg(
+    json_build_object(
+      'emetteur_id', t.emetteur_id,
+      'receveur_id', t.receveur_id,
+      'montant_recu', t.montant_recu,
+      'cout_total_emetteur', t.cout_total_emetteur,
+      'date', t.date
+    ) ORDER BY t.date ASC
+  ) INTO v_historique_complet
+  FROM transactions t
+  WHERE t.partie_id = p_party_id AND (t.emetteur_id = p_user_id OR t.receveur_id = p_user_id) AND t.statut = 'validée';
+
+
   RETURN json_build_object(
     'success', true,
     'party', json_build_object(
       'nom', v_party.nom,
+      'solde_initial', v_party.solde_initial,
+      'date_creation', v_party.date_creation,
       'solde_max', v_party.solde_max,
       'code_invitation', v_party.code_invitation,
       'salaire_actif', v_party.salaire_actif,
@@ -462,7 +478,8 @@ BEGIN
     ),
     'solde_actuel', v_solde_actuel,
     'classement', coalesce(v_classement, '[]'::json),
-    'historique', coalesce(v_historique, '[]'::json)
+    'historique', coalesce(v_historique, '[]'::json),
+    'historique_complet', coalesce(v_historique_complet, '[]'::json)
   );
 END;
 $$;

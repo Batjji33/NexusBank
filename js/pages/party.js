@@ -26,7 +26,7 @@ export default function renderParty(container, partyId) {
 
         <div class="content-area animate-in" style="max-width: 1600px;">
             <!-- Bloc Solde avec bouton intégré (Desktop & Mobile) -->
-            <div class="hero-balance" style="margin-bottom: 40px; display: flex; flex-direction: column; gap: 24px;">
+            <div class="hero-balance" style="margin-bottom: 32px; display: flex; flex-direction: column; gap: 24px;">
                 <div class="flex justify-between items-center wrap-mobile">
                     <div class="flex-col gap-1">
                         <div class="text-secondary" style="font-size: 0.9rem;">Solde disponible</div>
@@ -43,6 +43,16 @@ export default function renderParty(container, partyId) {
                 </div>
                 
                 <div class="progress-bar" style="height: 12px;"><div class="progress-fill" id="balance-progress"></div></div>
+            </div>
+
+            <!-- Graphique Evolution -->
+            <div class="bg-card animate-in" style="margin-bottom: 32px; padding: 24px; animation-delay: 0.1s;">
+                <h2 style="margin-bottom: 16px; font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">
+                    📈 Évolution du solde
+                </h2>
+                <div style="height: 250px; position: relative;">
+                    <canvas id="balanceChart"></canvas>
+                </div>
             </div>
 
             <!-- Grille des blocs -->
@@ -187,6 +197,83 @@ export default function renderParty(container, partyId) {
                         </div>
                     `;
                 }).join('');
+
+            // Rendu du Graphique d'Évolution
+            if (window.Chart) {
+                let currentSolde = parseFloat(data.party.solde_initial);
+                const chartPoints = [{ x: new Date(data.party.date_creation), y: currentSolde }];
+
+                if (data.historique_complet) {
+                    data.historique_complet.forEach(tx => {
+                        if (tx.emetteur_id === session.user_id) {
+                            currentSolde -= parseFloat(tx.cout_total_emetteur);
+                        } else {
+                            currentSolde += parseFloat(tx.montant_recu);
+                        }
+                        chartPoints.push({ x: new Date(tx.date), y: currentSolde });
+                    });
+                }
+                
+                // Add current balance as last point if no recent transaction happened right now
+                if (chartPoints.length === 1 || new Date() - chartPoints[chartPoints.length-1].x > 1000) {
+                    chartPoints.push({ x: new Date(), y: parseFloat(data.solde_actuel) });
+                }
+
+                const ctx = document.getElementById('balanceChart').getContext('2d');
+                if (window.balanceChartInstance) {
+                    window.balanceChartInstance.destroy();
+                }
+
+                const labels = chartPoints.map(p => {
+                    const d = p.x;
+                    return d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                });
+                const dataValues = chartPoints.map(p => p.y);
+
+                window.balanceChartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Solde (€)',
+                            data: dataValues,
+                            borderColor: '#7c4dff',
+                            backgroundColor: 'rgba(124, 77, 255, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 3,
+                            pointBackgroundColor: '#b47cff',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return context.parsed.y.toFixed(2) + ' €';
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: { 
+                                ticks: { color: '#94a3b8', maxTicksLimit: 6 }, 
+                                grid: { color: 'rgba(255,255,255,0.05)' } 
+                            },
+                            y: { 
+                                ticks: { color: '#94a3b8', callback: (val) => val + ' €' }, 
+                                grid: { color: 'rgba(255,255,255,0.05)' },
+                                beginAtZero: false
+                            }
+                        }
+                    }
+                });
+            }
+
         } catch (err) { console.error(err); }
     }
 
