@@ -465,6 +465,7 @@ BEGIN
 
   RETURN json_build_object(
     'success', true,
+    'is_admin', (v_party.createur_id = p_user_id),
     'party', json_build_object(
       'nom', v_party.nom,
       'solde_initial', v_party.solde_initial,
