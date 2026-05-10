@@ -11,11 +11,9 @@ export default function renderParty(container, partyId) {
 
     container.innerHTML = `
         <div class="navbar animate-in">
-            <div class="logo-container" id="nav-logo-home" style="cursor:pointer;" title="Retour à l'accueil">
-                <div class="logo-square">
-                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M4 4V20H7L17 8V20H20V4H17L7 16V4H4Z" fill="white"/>
-                    </svg>
+            <div class="logo-container" id="nav-logo-home" title="Retour à l'accueil">
+                <div class="logo-icon" style="width:32px; height:32px; border-radius:8px;">
+                    <svg viewBox="0 0 100 100" fill="white" style="width:20px; height:20px;"><path d="M25 25 V75 H35 L65 35 V75 H75 V25 H65 L35 65 V25 Z"/></svg>
                 </div>
                 <div class="logo">Dashboard</div>
             </div>
