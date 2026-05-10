@@ -10,9 +10,7 @@ export default function renderHome(container) {
     container.innerHTML = `
         <div class="navbar animate-in">
             <div class="logo-container">
-                <div class="logo-icon" style="width:32px; height:32px; border-radius:8px;">
-                    <svg viewBox="0 0 100 100" fill="white" style="width:20px; height:20px;"><path d="M25 25 V75 H35 L65 35 V75 H75 V25 H65 L35 65 V25 Z"/></svg>
-                </div>
+                <div class="logo-icon">N</div>
                 <div class="logo">NexusBank</div>
             </div>
             <div class="user-actions flex items-center gap-4">
