@@ -265,24 +265,17 @@ export default function renderParty(container, partyId) {
                 const ctx = document.getElementById('balanceChart').getContext('2d');
                 if (window.balanceChartInstance) window.balanceChartInstance.destroy();
 
-                const labels = chartPoints.map(p => {
-                    const d = p.x;
-                    return d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                });
-                const dataValues = chartPoints.map(p => p.y);
-
                 window.balanceChartInstance = new Chart(ctx, {
                     type: 'line',
                     data: {
-                        labels: labels,
                         datasets: [{
                             label: 'Solde (€)',
-                            data: dataValues,
+                            data: chartPoints,
                             borderColor: '#7c4dff',
                             backgroundColor: 'rgba(124, 77, 255, 0.1)',
                             fill: true,
-                            tension: 0.4,
-                            pointRadius: 3,
+                            tension: 0.3,
+                            pointRadius: 4,
                             pointBackgroundColor: '#b47cff',
                             borderWidth: 2
                         }]
@@ -290,13 +283,41 @@ export default function renderParty(container, partyId) {
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
+                        interaction: {
+                            intersect: false,
+                            mode: 'index',
+                        },
                         plugins: {
                             legend: { display: false },
-                            tooltip: { callbacks: { label: (c) => c.parsed.y.toFixed(2) + ' €' } }
+                            tooltip: {
+                                callbacks: {
+                                    title: (context) => {
+                                        const d = new Date(context[0].parsed.x);
+                                        return d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                                    },
+                                    label: (c) => `Solde: ${c.parsed.y.toFixed(2)} €`
+                                }
+                            }
                         },
                         scales: {
-                            x: { ticks: { color: '#94a3b8', maxTicksLimit: 6 }, grid: { color: 'rgba(255,255,255,0.05)' } },
-                            y: { ticks: { color: '#94a3b8', callback: (val) => val + ' €' }, grid: { color: 'rgba(255,255,255,0.05)' }, beginAtZero: false }
+                            x: { 
+                                type: 'time',
+                                time: {
+                                    unit: 'day',
+                                    displayFormats: {
+                                        day: 'dd MMM',
+                                        hour: 'HH:mm'
+                                    },
+                                    tooltipFormat: 'dd MMM HH:mm'
+                                },
+                                ticks: { color: '#94a3b8', maxTicksLimit: 6 }, 
+                                grid: { color: 'rgba(255,255,255,0.05)' } 
+                            },
+                            y: { 
+                                ticks: { color: '#94a3b8', callback: (val) => val + ' €' }, 
+                                grid: { color: 'rgba(255,255,255,0.05)' },
+                                beginAtZero: false
+                            }
                         }
                     }
                 });
