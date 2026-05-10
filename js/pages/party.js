@@ -92,27 +92,62 @@ export default function renderParty(container, partyId) {
             </div>
         </div>
 
-        <!-- Modale de virement -->
+        <!-- Modale de virement avec Double Validation -->
         <div class="modal-overlay" id="transfer-modal">
             <div class="modal-content animate-in">
-                <h2 style="text-align: center;">Nouveau Virement</h2>
-                <form id="transfer-form" style="margin-top:24px;">
-                    <div class="flex-col gap-4">
-                        <div><label class="text-secondary" style="font-size: 0.8rem; margin-bottom: 6px; display: block;">Destinataire</label><select id="transfer-receiver" required><option value="">Choisir...</option></select></div>
-                        <div><label class="text-secondary" style="font-size: 0.8rem; margin-bottom: 6px; display: block;">Montant (€)</label><input type="number" id="transfer-amount" min="1" step="0.01" placeholder="0.00" required></div>
-                        <div class="recap-box" id="transfer-recap" style="display:none; background: rgba(255,255,255,0.03); padding: 20px; border-radius: 16px;">
-                            <div class="flex justify-between" style="font-size: 0.9rem; margin-bottom: 8px;"><span class="text-secondary">Envoi</span> <span id="recap-base">0.00 €</span></div>
-                            <div class="flex justify-between text-error" style="font-size: 0.85rem; margin-bottom: 4px;"><span id="recap-taxe-label">Taxe</span> <span id="recap-taxe">0.00 €</span></div>
-                            <div class="flex justify-between text-error" style="font-size: 0.85rem; margin-bottom: 12px;"><span>Frais de service</span> <span id="recap-frais-label">0.00 €</span></div>
-                            <div class="flex justify-between" style="font-weight: 700; padding-top: 12px; border-top: 1px dashed rgba(255,255,255,0.1);"><span>Total débit</span> <span id="recap-debit" class="text-error">0.00 €</span></div>
+                <!-- Etape 1: Saisie -->
+                <div id="transfer-step-1">
+                    <h2 style="text-align: center;">Nouveau Virement</h2>
+                    <form id="transfer-form" style="margin-top:24px;">
+                        <div class="flex-col gap-4">
+                            <div>
+                                <label class="text-secondary" style="font-size: 0.8rem; margin-bottom: 6px; display: block;">Destinataire</label>
+                                <select id="transfer-receiver" required><option value="">Choisir...</option></select>
+                            </div>
+                            <div>
+                                <label class="text-secondary" style="font-size: 0.8rem; margin-bottom: 6px; display: block;">Montant (€)</label>
+                                <input type="number" id="transfer-amount" min="1" step="0.01" placeholder="0.00" required>
+                            </div>
+                            
+                            <div class="recap-box" id="transfer-recap" style="display:none; background: rgba(255,255,255,0.03); padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05);">
+                                <div class="flex justify-between" style="font-size: 0.9rem; margin-bottom: 8px;"><span class="text-secondary">Envoi</span> <span id="recap-base">0.00 €</span></div>
+                                <div class="flex justify-between text-error" style="font-size: 0.85rem; margin-bottom: 4px;"><span id="recap-taxe-label">Taxe</span> <span id="recap-taxe">0.00 €</span></div>
+                                <div class="flex justify-between text-error" style="font-size: 0.85rem; margin-bottom: 12px;"><span>Frais de service</span> <span id="recap-frais-label">0.00 €</span></div>
+                                <div class="flex justify-between" style="font-weight: 700; padding-top: 12px; border-top: 1px dashed rgba(255,255,255,0.1);"><span>Total débit</span> <span id="recap-debit" class="text-error">0.00 €</span></div>
+                            </div>
                         </div>
+                        <div class="flex gap-3" style="margin-top: 32px;">
+                            <button type="button" class="btn-outline" style="flex:1;" id="btn-cancel-transfer">Annuler</button>
+                            <button type="submit" style="flex:2;" id="btn-go-to-step-2" disabled>Suivant</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Etape 2: Confirmation Finale -->
+                <div id="transfer-step-2" style="display:none;">
+                    <h2 style="text-align: center;">Vérification</h2>
+                    <div style="text-align: center; margin: 32px 0;">
+                        <div style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 12px;">Vous allez envoyer</div>
+                        <div style="font-size: 2.2rem; font-weight: 800; color: var(--accent);" id="final-confirm-amount">0.00 €</div>
+                        <div style="font-size: 1rem; margin-top: 12px;">à <strong id="final-confirm-receiver" style="color:white;">...</strong></div>
                     </div>
-                    <div class="flex gap-3" style="margin-top: 32px;">
-                        <button type="button" class="btn-outline" style="flex:1;" id="btn-cancel-transfer">Annuler</button>
-                        <button type="submit" style="flex:2;" id="btn-confirm-transfer" disabled>Confirmer</button>
+                    
+                    <div class="bg-card" style="background: rgba(255,255,255,0.02); border: 1px dashed var(--accent); padding: 16px; margin-bottom: 32px; font-size: 0.85rem; text-align: center;">
+                        🚀 Cette action est irréversible. Confirmez-vous le transfert ?
                     </div>
-                </form>
-                <div id="transfer-success" style="display:none; text-align:center; padding:30px 0;"><div style="font-size: 4rem; margin-bottom: 16px;">🚀</div><h3 class="text-success">Virement validé !</h3></div>
+
+                    <div class="flex-col gap-3">
+                        <button id="btn-confirm-final" style="width: 100%; height: 56px;">Confirmer le virement</button>
+                        <button class="btn-outline" id="btn-back-to-step-1" style="width: 100%; border: none; font-size: 0.9rem;">Modifier les informations</button>
+                    </div>
+                </div>
+
+                <!-- Succès -->
+                <div id="transfer-success" style="display:none; text-align:center; padding:30px 0;">
+                    <div style="font-size: 4rem; margin-bottom: 16px;">🚀</div>
+                    <h3 class="text-success">Virement validé !</h3>
+                    <p class="text-secondary" style="margin-top: 8px;">Les fonds ont été transférés avec succès.</p>
+                </div>
             </div>
         </div>
     `;
@@ -126,7 +161,7 @@ export default function renderParty(container, partyId) {
             .mobile-hide-info { display: none !important; }
             .wrap-mobile { flex-direction: column; align-items: stretch !important; gap: 24px; }
             #btn-virement-main { width: 100%; height: 60px; font-weight: 700; }
-            .dashboard-grid { gap: 32px !important; } /* Plus d'espace entre les blocs sur mobile */
+            .dashboard-grid { gap: 32px !important; }
             .content-area { padding-bottom: 120px !important; }
         }
         @media (min-width: 1100px) {
@@ -214,15 +249,12 @@ export default function renderParty(container, partyId) {
                     });
                 }
                 
-                // Add current balance as last point if no recent transaction happened right now
                 if (chartPoints.length === 1 || new Date() - chartPoints[chartPoints.length-1].x > 1000) {
                     chartPoints.push({ x: new Date(), y: parseFloat(data.solde_actuel) });
                 }
 
                 const ctx = document.getElementById('balanceChart').getContext('2d');
-                if (window.balanceChartInstance) {
-                    window.balanceChartInstance.destroy();
-                }
+                if (window.balanceChartInstance) window.balanceChartInstance.destroy();
 
                 const labels = chartPoints.map(p => {
                     const d = p.x;
@@ -251,41 +283,64 @@ export default function renderParty(container, partyId) {
                         maintainAspectRatio: false,
                         plugins: {
                             legend: { display: false },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        return context.parsed.y.toFixed(2) + ' €';
-                                    }
-                                }
-                            }
+                            tooltip: { callbacks: { label: (c) => c.parsed.y.toFixed(2) + ' €' } }
                         },
                         scales: {
-                            x: { 
-                                ticks: { color: '#94a3b8', maxTicksLimit: 6 }, 
-                                grid: { color: 'rgba(255,255,255,0.05)' } 
-                            },
-                            y: { 
-                                ticks: { color: '#94a3b8', callback: (val) => val + ' €' }, 
-                                grid: { color: 'rgba(255,255,255,0.05)' },
-                                beginAtZero: false
-                            }
+                            x: { ticks: { color: '#94a3b8', maxTicksLimit: 6 }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                            y: { ticks: { color: '#94a3b8', callback: (val) => val + ' €' }, grid: { color: 'rgba(255,255,255,0.05)' }, beginAtZero: false }
                         }
                     }
                 });
             }
-
         } catch (err) { console.error(err); }
     }
 
     const modal = document.getElementById('transfer-modal');
     const openTransfer = () => {
-        document.getElementById('transfer-form').style.display = 'block';
+        document.getElementById('transfer-step-1').style.display = 'block';
+        document.getElementById('transfer-step-2').style.display = 'none';
         document.getElementById('transfer-success').style.display = 'none';
         modal.classList.add('active');
     };
 
     document.getElementById('btn-virement-main').onclick = openTransfer;
     document.getElementById('btn-cancel-transfer').onclick = () => modal.classList.remove('active');
+
+    // Navigation entre étapes
+    document.getElementById('transfer-form').onsubmit = (e) => {
+        e.preventDefault();
+        document.getElementById('final-confirm-amount').innerText = formatCurrency(document.getElementById('transfer-amount').value);
+        document.getElementById('final-confirm-receiver').innerText = selectReceiver.value;
+        document.getElementById('transfer-step-1').style.display = 'none';
+        document.getElementById('transfer-step-2').style.display = 'block';
+    };
+
+    document.getElementById('btn-back-to-step-1').onclick = () => {
+        document.getElementById('transfer-step-2').style.display = 'none';
+        document.getElementById('transfer-step-1').style.display = 'block';
+    };
+
+    // Confirmation finale
+    document.getElementById('btn-confirm-final').onclick = async (e) => {
+        const restore = showLoader(e.target);
+        const { data, error } = await supabase.rpc('send_transaction', { 
+            p_emetteur_id: session.user_id, 
+            p_party_id: partyId, 
+            p_receveur_username: selectReceiver.value, 
+            p_montant: parseFloat(document.getElementById('transfer-amount').value) 
+        });
+        
+        if (error || !data.success) {
+            showToast(data?.error || "Erreur lors du transfert", "error");
+            restore();
+        } else {
+            document.getElementById('transfer-step-2').style.display = 'none';
+            document.getElementById('transfer-success').style.display = 'block';
+            await loadDashboard();
+            setTimeout(() => modal.classList.remove('active'), 2500);
+            restore();
+        }
+    };
 
     document.getElementById('btn-toggle-salaire').onclick = async (e) => {
         const restore = showLoader(e.target);
@@ -314,20 +369,7 @@ export default function renderParty(container, partyId) {
         document.getElementById('recap-frais-label').innerText = `- ${formatCurrency(fFixe)}`;
         document.getElementById('recap-debit').innerText = formatCurrency(val + fFixe);
         document.getElementById('transfer-recap').style.display = 'block';
-        document.getElementById('btn-confirm-transfer').disabled = false;
-    };
-
-    document.getElementById('transfer-form').onsubmit = async (e) => {
-        e.preventDefault();
-        const restore = showLoader(document.getElementById('btn-confirm-transfer'));
-        const { data, error } = await supabase.rpc('send_transaction', { p_emetteur_id: session.user_id, p_party_id: partyId, p_receveur_username: selectReceiver.value, p_montant: parseFloat(document.getElementById('transfer-amount').value) });
-        if (error || !data.success) showToast(data?.error || "Erreur", "error");
-        else {
-            document.getElementById('transfer-form').style.display = 'none';
-            document.getElementById('transfer-success').style.display = 'block';
-            await loadDashboard(); setTimeout(() => modal.classList.remove('active'), 2000);
-        }
-        restore();
+        document.getElementById('btn-go-to-step-2').disabled = false;
     };
 
     loadDashboard();
