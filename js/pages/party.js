@@ -274,7 +274,7 @@ export default function renderParty(container, partyId) {
                             borderColor: '#7c4dff',
                             backgroundColor: 'rgba(124, 77, 255, 0.1)',
                             fill: true,
-                            tension: 0.3,
+                            stepped: true,
                             pointRadius: 4,
                             pointBackgroundColor: '#b47cff',
                             borderWidth: 2
